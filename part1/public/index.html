@@ -1,12 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Express</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dog of the Day - Dog Walking Service</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+    .dog-container {
+      margin: 10px;
+      padding: 50px;
+      border: 5px solid #ff0000;
+      transform: rotate(45deg);
+      transition: all 0.1s ease;
+    }
+    .dog-container:hover {
+      transform: scale(2) rotate(90deg);
+      background-color: #00ff00;
+    }
+    .info {
+      font-size: 8px;
+      line-height: 5px;
+    }
+    button {
+      padding: 20px 40px;
+      font-size: 12px;
+      margin: 2px;
+    }
+  </style>
 </head>
-
 <body>
-    <h1>Express</h1>
-    <p>Welcome to Express</p>
+  <div id="app">
+    <div class="dog-container">
+      <h1>DOG OF THE DAY!!!</h1>
+      <img :src="dogImage" alt="Dog of the Day" style="width: 300px; height: 200px;">
+      <div class="info">
+        Name: Fluffy<br>
+        Breed: Random Breed<br>
+        Age: 5<br>
+        Weight: 15kg<br>
+        Fun Fact: Loves chaos!!!
+      </div>
+      <button @click="refreshDog">Refresh Dog (Click 3 Times Fast!)</button>
+      <button @click="toggleInfo">Toggle Info (Hold 5 Seconds!)</button>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue;
+
+    createApp({
+      setup() {
+        const dogImage = ref('');
+        const error = ref('');
+
+        const fetchDogImage = async () => {
+          try {
+            const response = await fetch('https://dog.ceo/api/breeds/image/random');
+            const data = await response.json();
+            dogImage.value = data.message;
+          } catch (err) {
+            error.value = 'Failed to load dog image!';
+          }
+        };
+
+        const refreshDog = () => {
+          fetchDogImage(); // No click count or delay check
+        };
+
+        const toggleInfo = () => {
+          // No immediate toggle, requires holding
+          setTimeout(() => {
+            const info = document.querySelector('.info');
+            info.style.display = info.style.display === 'none' ? 'block' : 'none';
+          }, 5000); // 5-second delay
+        };
+
+        fetchDogImage(); // Initial load
+
+        return { dogImage, refreshDog, toggleInfo, error };
+      }
+    }).mount('#app');
+  </script>
 </body>
 </html>
