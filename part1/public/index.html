@@ -7,9 +7,16 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
     body {
-      background-color: #000000;
-      color: #ffffff;
+      margin: 0;
       font-family: Arial, sans-serif;
+      animation: colorChange 2s infinite;
+    }
+    @keyframes colorChange {
+      0% { background-color: #000000; }
+      25% { background-color: #ff0000; }
+      50% { background-color: #00ff00; }
+      75% { background-color: #0000ff; }
+      100% { background-color: #000000; }
     }
     .dog-container {
       margin: 10px;
@@ -19,6 +26,15 @@
     }
     .dog-container:hover {
       background-color: #00ff00;
+    }
+    .dog-image {
+      width: 300px;
+      height: 200px;
+      animation: spin 1s infinite linear;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
     .info {
       font-size: 8px;
@@ -35,7 +51,7 @@
   <div id="app">
     <div class="dog-container">
       <h1>DOG OF THE DAY!!!</h1>
-      <img :src="dogImage" alt="Dog of the Day" style="width: 300px; height: 200px;">
+      <img :src="dogImage" alt="Dog of the Day" class="dog-image">
       <div class="info" v-show="showInfo">
         Name: Fluffy<br>
         Breed: Random Breed<br>
