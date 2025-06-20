@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('part1:server');
+var debug = require('debug')('final-exam-wdc-2025-duydo24:server');
 var http = require('http');
 
 /**
@@ -14,12 +14,14 @@ var http = require('http');
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
+console.log('Attempting to start server on port', port); // Added debug log
 
 /**
  * Create HTTP server.
  */
 
 var server = http.createServer(app);
+console.log('HTTP server created'); // Added debug log
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -54,6 +56,7 @@ function normalizePort(val) {
  */
 
 function onError(error) {
+  console.error('Server error:', error); // Enhanced error logging
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -62,7 +65,6 @@ function onError(error) {
     ? 'Pipe ' + port
     : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
@@ -86,5 +88,6 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
+  console.log('Server listening on ' + bind); // Enhanced success log
   debug('Listening on ' + bind);
 }
