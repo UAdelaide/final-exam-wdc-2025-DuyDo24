@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('final-exam-wdc-2025-duydo24:server');
+var debug = require('debug')('part1:server');
 var http = require('http');
 
 /**
