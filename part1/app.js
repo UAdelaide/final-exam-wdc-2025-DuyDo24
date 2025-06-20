@@ -122,7 +122,7 @@ let db;
   }
 })();
 
-// API Routes
+// route to return 
 app.get('/api/dogs', async (req, res) => {
   try {
     const [rows] = await db.execute(`
