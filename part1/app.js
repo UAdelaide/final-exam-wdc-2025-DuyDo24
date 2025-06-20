@@ -136,6 +136,7 @@ app.get('/api/dogs', async (req, res) => {
   }
 });
 
+// route to return walk requests as JSON
 app.get('/api/walkrequests/open', async (req, res) => {
   try {
     const [rows] = await db.execute(`
@@ -151,6 +152,7 @@ app.get('/api/walkrequests/open', async (req, res) => {
   }
 });
 
+// route to return walkers as JSON
 app.get('/api/walkers/summary', async (req, res) => {
   try {
     const [rows] = await db.execute(`
