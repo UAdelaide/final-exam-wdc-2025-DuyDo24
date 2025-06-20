@@ -10,11 +10,82 @@
 <body class="bg-light">
 
   <div id="app" class="container py-5">
-    <h1 class="mb-4 text-primary">{{ message }}</h1>
-    <p class="lead">Connect with trusted walkers for your beloved dog!</p>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-body p-5">
+            <h1 class="text-center mb-4 text-primary">{{ message }}</h1>
+            <p class="text-center lead mb-4">Connect with trusted walkers for your beloved dog!</p>
 
-    <a href="owner-dashboard.html" class="btn btn-outline-primary me-2">Owner Dashboard</a>
-    <a href="walker-dashboard.html" class="btn btn-outline-success">Walker Dashboard</a>
+            <!-- Login Form -->
+            <form @submit.prevent="handleLogin" v-if="!isLoggedIn">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  v-model="username"
+                  required
+                  placeholder="Enter your username"
+                >
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  v-model="password"
+                  required
+                  placeholder="Enter your password"
+                >
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg" :disabled="isLoading">
+                  <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  {{ isLoading ? 'Logging in...' : 'Log In' }}
+                </button>
+              </div>
+
+              <!-- Error message -->
+              <div v-if="errorMessage" class="alert alert-danger mt-3" role="alert">
+                {{ errorMessage }}
+              </div>
+            </form>
+
+            <!-- Dashboard Links (shown after successful login) -->
+            <div v-if="isLoggedIn" class="text-center">
+              <div class="alert alert-success mb-4">
+                Welcome back, {{ loggedInUser.username }}! ({{ loggedInUser.role }})
+              </div>
+              <div class="d-grid gap-2">
+                <a v-if="loggedInUser.role === 'owner'" href="owner-dashboard.html" class="btn btn-outline-primary btn-lg">
+                  Go to Owner Dashboard
+                </a>
+                <a v-if="loggedInUser.role === 'walker'" href="walker-dashboard.html" class="btn btn-outline-success btn-lg">
+                  Go to Walker Dashboard
+                </a>
+                <button @click="logout" class="btn btn-outline-secondary">Logout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demo Users Info -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="mb-0">Demo Users (for testing)</h6>
+          </div>
+          <div class="card-body">
+            <small class="text-muted">
+              <strong>Owners:</strong> ownerJane (password123), ownerBob (password789)<br>
+              <strong>Walker:</strong> walkerMike (password456)
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -22,8 +93,117 @@
     createApp({
       data() {
         return {
-          message: 'Welcome to the Dog Walking Service!'
+          message: 'Welcome to the Dog Walking Service!',
+          username: '',
+          password: '',
+          isLoading: false,
+          errorMessage: '',
+          isLoggedIn: false,
+          loggedInUser: null,
+          // Mock database users (in a real app, this would be handled server-side)
+          users: [
+            {
+              user_id: 1,
+              username: 'ownerJane',
+              email: 'jane@example.com',
+              password: 'password123', // In real app, this would be hashed
+              role: 'owner'
+            },
+            {
+              user_id: 2,
+              username: 'walkerMike',
+              email: 'mike@example.com',
+              password: 'password456',
+              role: 'walker'
+            },
+            {
+              user_id: 3,
+              username: 'ownerBob',
+              email: 'bob@example.com',
+              password: 'password789',
+              role: 'owner'
+            }
+          ]
         };
+      },
+      mounted() {
+        // Check if user is already logged in (from session/localStorage)
+        this.checkExistingSession();
+      },
+      methods: {
+        handleLogin() {
+          this.isLoading = true;
+          this.errorMessage = '';
+
+          // Simulate API call delay
+          setTimeout(() => {
+            const user = this.authenticateUser(this.username, this.password);
+
+            if (user) {
+              // Successful login
+              this.isLoggedIn = true;
+              this.loggedInUser = user;
+
+              // Store session (in a real app, this would be handled server-side)
+              this.storeSession(user);
+
+              // Auto-redirect after 2 seconds
+              setTimeout(() => {
+                if (user.role === 'owner') {
+                  window.location.href = 'owner-dashboard.html';
+                } else if (user.role === 'walker') {
+                  window.location.href = 'walker-dashboard.html';
+                }
+              }, 2000);
+
+            } else {
+              // Failed login
+              this.errorMessage = 'Invalid username or password. Please try again.';
+            }
+
+            this.isLoading = false;
+          }, 1000);
+        },
+
+        authenticateUser(username, password) {
+          // In a real app, this would make an API call to verify credentials
+          return this.users.find(user =>
+            user.username === username && user.password === password
+          );
+        },
+
+        storeSession(user) {
+          // Store user session (simplified - in real app would use secure tokens)
+          const sessionData = {
+            user_id: user.user_id,
+            username: user.username,
+            role: user.role,
+            loginTime: new Date().toISOString()
+          };
+          // Note: In a real application, you'd store this server-side or use secure tokens
+          // For demo purposes, we'll use a simple approach
+          window.sessionStorage.setItem('dogWalkingUser', JSON.stringify(sessionData));
+        },
+
+        checkExistingSession() {
+          // Check if user is already logged in
+          const sessionData = window.sessionStorage.getItem('dogWalkingUser');
+          if (sessionData) {
+            const userData = JSON.parse(sessionData);
+            this.loggedInUser = userData;
+            this.isLoggedIn = true;
+          }
+        },
+
+        logout() {
+          // Clear session
+          window.sessionStorage.removeItem('dogWalkingUser');
+          this.isLoggedIn = false;
+          this.loggedInUser = null;
+          this.username = '';
+          this.password = '';
+          this.errorMessage = '';
+        }
       }
     }).mount('#app');
   </script>
