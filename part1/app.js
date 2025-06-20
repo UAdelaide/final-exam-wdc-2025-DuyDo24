@@ -122,7 +122,7 @@ let db;
   }
 })();
 
-// route to return 
+// route to return dogs as JSON
 app.get('/api/dogs', async (req, res) => {
   try {
     const [rows] = await db.execute(`
