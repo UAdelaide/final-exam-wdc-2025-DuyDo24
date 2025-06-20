@@ -19,7 +19,7 @@
       transition: all 0.1s ease;
     }
     .dog-container:hover {
-      transform: scale(2) rotate(10deg);
+      transform: scale(2) rotate(90deg);
       background-color: #00ff00;
     }
     .info {
@@ -38,7 +38,7 @@
     <div class="dog-container">
       <h1>DOG OF THE DAY!!!</h1>
       <img :src="dogImage" alt="Dog of the Day" style="width: 300px; height: 200px;">
-      <div class="info">
+      <div class="info" v-show="showInfo">
         Name: Fluffy<br>
         Breed: Random Breed<br>
         Age: 5<br>
@@ -46,7 +46,7 @@
         Fun Fact: Loves chaos!!!
       </div>
       <button @click="refreshDog">Refresh Dog (Click 3 Times Fast!)</button>
-      <button @click="toggleInfo">Toggle Info (Hold 5 Seconds!)</button>
+      <button @click="toggleInfo">Show/Hide Info (Click 5 Times!)</button>
     </div>
   </div>
 
@@ -57,6 +57,8 @@
       setup() {
         const dogImage = ref('');
         const error = ref('');
+        const showInfo = ref(false);
+        let clickCount = ref(0);
 
         const fetchDogImage = async () => {
           try {
@@ -69,20 +71,20 @@
         };
 
         const refreshDog = () => {
-          fetchDogImage(); 
+          fetchDogImage(); // No click count or delay check
         };
 
         const toggleInfo = () => {
-          // No immediate toggle, requires holding
-          setTimeout(() => {
-            const info = document.querySelector('.info');
-            info.style.display = info.style.display === 'none' ? 'block' : 'none';
-          }, 5000); // 5-second delay
+          clickCount.value += 1;
+          if (clickCount.value >= 5) {
+            showInfo.value = !showInfo.value;
+            clickCount.value = 0; // Reset after 5 clicks
+          }
         };
 
         fetchDogImage(); // Initial load
 
-        return { dogImage, refreshDog, toggleInfo, error };
+        return { dogImage, refreshDog, toggleInfo, error, showInfo };
       }
     }).mount('#app');
   </script>
