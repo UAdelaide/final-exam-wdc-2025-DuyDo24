@@ -83,6 +83,11 @@
         };
 
         const refreshDog = () => {
+          clickCount.value += 1;
+          if (clickCount.value >= 3) {
+            showInfo.value = !showInfo.value;
+            clickCount.value = 0;
+          }
           fetchDogImage();
         };
 
@@ -94,7 +99,7 @@
           }
         };
 
-        fetchDogImage(); 
+        fetchDogImage();
         return { dogImage, refreshDog, toggleInfo, error, showInfo };
       }
     }).mount('#app');
