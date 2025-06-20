@@ -83,19 +83,18 @@
         };
 
         const refreshDog = () => {
-          fetchDogImage(); // No click count or delay check
+          fetchDogImage();
         };
 
         const toggleInfo = () => {
           clickCount.value += 1;
           if (clickCount.value >= 5) {
             showInfo.value = !showInfo.value;
-            clickCount.value = 0; // Reset after 5 clicks
+            clickCount.value = 0;
           }
         };
 
-        fetchDogImage(); // Initial load
-
+        fetchDogImage(); 
         return { dogImage, refreshDog, toggleInfo, error, showInfo };
       }
     }).mount('#app');
