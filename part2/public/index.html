@@ -48,7 +48,8 @@
               </div>
             </form>
 
-            <div class="mt-4">
+            <!-- Dog Table Section -->
+            <div v-if="isLoggedIn" class="mt-4">
               <h2 class="mb-4">Our Featured Dogs</h2>
               <div v-if="isLoading" class="text-center mt-5">
                 <div class="spinner-border text-primary" role="status">
@@ -56,7 +57,7 @@
                 </div>
                 <p class="mt-2">Fetching dog photos...</p>
               </div>
-              <div v-else class="table-responsive">
+              <div v-else-if="dogs.length" class="table-responsive">
                 <table class="table table-striped table-hover align-middle">
                   <thead>
                     <tr><th>Photo</th><th>Name</th><th>Size</th><th>Owner</th></tr>
@@ -71,6 +72,7 @@
                   </tbody>
                 </table>
               </div>
+              <div v-else class="alert alert-warning">No dogs available at the moment.</div>
             </div>
           </div>
         </div>
