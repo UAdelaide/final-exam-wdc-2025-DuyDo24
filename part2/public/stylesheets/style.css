@@ -156,13 +156,3 @@ textarea {
 section {
     display: none;
 }
-
-/* Additional styles for dashboards */
-.walk-item {
-    position: relative;
-}
-.walk-item .votes {
-    position: absolute;
-    left: 0;
-    top: 1em;
-}
