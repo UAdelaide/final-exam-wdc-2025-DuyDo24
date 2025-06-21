@@ -141,15 +141,10 @@
               method: 'POST',
               credentials: 'include'
             });
-
-            // Always redirect to login regardless of response
-            // This ensures logout works even if there are server issues
             window.location.href = '/';
-
           } catch (err) {
-            // Even if logout request fails, redirect to login
             console.error('Logout request failed:', err);
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         }
 
