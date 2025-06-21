@@ -161,15 +161,7 @@
           }
         },
 
-        logout() {
-          // Clear session
-          window.sessionStorage.removeItem('dogWalkingUser');
-          this.isLoggedIn = false;
-          this.loggedInUser = null;
-          this.username = '';
-          this.password = '';
-          this.errorMessage = '';
-        }
+        
       }
     }).mount('#app');
   </script>
