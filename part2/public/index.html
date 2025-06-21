@@ -127,41 +127,26 @@
           this.isLoading = true;
           this.errorMessage = '';
           try {
-            // Attempt to fetch dogs from API
             const dogsRes = await fetch('/api/dogs');
-            if (!dogsRes.ok) throw new Error(`Could not fetch dog list: ${dogsRes.status}`);
+            if (!dogsRes.ok) throw new Error('Could not fetch dog list.');
             const initialDogs = await dogsRes.json();
 
-            // Validate dog data
-            if (!Array.isArray(initialDogs) || !initialDogs.every(dog => dog.dog_id && dog.name && dog.size && dog.owner_id)) {
-              throw new Error('Invalid dog data format');
-            }
-
-            // Fetch images for each dog
             const imagePromises = initialDogs.map(() =>
-              fetch('https://dog.ceo/api/breeds/image/random')
-                .then(res => res.json())
-                .catch(() => ({ message: null })) // Fallback for failed image fetch
+              fetch('https://dog.ceo/api/breeds/image/random').then(res => res.json())
             );
 
             const imageResults = await Promise.all(imagePromises);
 
-            // Combine dog data with images
             this.dogs = initialDogs.map((dog, index) => ({
               ...dog,
-              photoUrl: imageResults[index].message || null // Use null if image fetch fails
+              photoUrl: imageResults[index].message
             }));
           } catch (err) {
             console.error('Failed to load dogs and images:', err);
-            // Fallback data to ensure table renders
-            this.dogs = [
-              { dog_id: 1, name: 'Buddy', size: 'Large', owner_id: 1, photoUrl: null },
-              { dog_id: 2, name: 'Luna', size: 'Small', owner_id: 1, photoUrl: null }
-            ];
-            this.errorMessage = 'Could not load dog list; showing sample data.';
+            this.errorMessage = 'Could not load the list of dogs.';
           }
           this.isLoading = false;
-        }
+        },
       }
     }).mount('#app');
   </script>
