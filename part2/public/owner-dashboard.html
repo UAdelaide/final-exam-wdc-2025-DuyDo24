@@ -119,11 +119,11 @@
             message.value = '';
           }
         }
-
+        //Logout function
         async function logout() {
         try {
           await fetch('/api/users/logout', {
-            method: 'GET', 
+            method: 'GET',
             credentials: 'include' // Ensures cookies are sent and cleared
           });
           // Redirect handled by server response
