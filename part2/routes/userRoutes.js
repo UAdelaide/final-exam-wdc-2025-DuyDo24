@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
 // Logout endpoint
 app.post('/api/users/logout', (req, res) => {
   // Clear the session cookie
-  res.clearCookie('sessionId'); // or whatever your cookie name is
+  res.clearCookie('sessionId'); // 
 
   // If using express-session:
   req.session.destroy((err) => {
