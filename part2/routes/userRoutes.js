@@ -68,4 +68,24 @@ app.post('/api/users/logout', (req, res) => {
   });
 });
 
+// Get dogs owned by the logged-in user
+router.get('/dogs', requireAuth, async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const query = `
+      SELECT dog_id, name, size
+      FROM dogs
+      WHERE owner_id = ?
+      ORDER BY name
+    `;
+
+    const dogs = await db.query(query, [userId]);
+
+    res.json(dogs);
+  } catch (error) {
+    console.error('Error fetching user dogs:', error);
+    res.status(500).json({ error: 'Failed to fetch dogs' });
+  }
+});
+
 module.exports = router;
