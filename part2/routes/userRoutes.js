@@ -57,17 +57,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Logout endpoint
-router.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Logout failed' });
-    }
-    // Clear the session cookie
-    res.clearCookie('connect.sid');
-    res.json({ message: 'Logged out successfully' });
-  });
-});
+
 
 // Get dogs owned by the logged-in user
 router.get('/dogs', requireAuth, async (req, res) => {
@@ -100,3 +90,15 @@ router.get('/dogs', requireAuth, async (req, res) => {
 
 
 module.exports = router;
+
+// Logout endpoint
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Logout failed' });
+    }
+    // Clear the session cookie
+    res.clearCookie('connect.sid');
+    res.json({ message: 'Logged out successfully' });
+  });
+});
