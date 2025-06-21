@@ -24,8 +24,13 @@
       <div class="card-body">
         <form @submit.prevent="submitWalkRequest">
           <div class="mb-3">
-            <label class="form-label">Dog ID</label>
-            <input v-model="form.dog_id" type="number" class="form-control" required>
+            <label class="form-label">Select Your Dog</label>
+            <select v-model="form.dog_id" class="form-select" required>
+              <option value="">-- Choose a dog --</option>
+              <option v-for="dog in userDogs" :key="dog.dog_id" :value="dog.dog_id">
+                {{ dog.name }} ({{ dog.size }})
+              </option>
+            </select>
           </div>
           <div class="mb-3">
             <label class="form-label">Requested Date & Time</label>
@@ -82,6 +87,7 @@
         });
 
         const walks = ref([]);
+        const userDogs = ref([]);
         const message = ref('');
         const error = ref('');
 
@@ -99,6 +105,22 @@
             walks.value = await res.json();
           } catch (err) {
             error.value = 'Failed to load walk requests';
+          }
+        }
+
+        async function loadUserDogs() {
+          try {
+            const res = await fetch('/api/users/dogs');
+            if (!res.ok) {
+              if (res.status === 401) {
+                window.location.href = '/login';
+                return;
+              }
+              throw new Error('Failed to load dogs');
+            }
+            userDogs.value = await res.json();
+          } catch (err) {
+            error.value = 'Failed to load your dogs';
           }
         }
 
@@ -142,7 +164,9 @@
               credentials: 'include'
             });
             window.location.href = '/';
+
           } catch (err) {
+
             console.error('Logout request failed:', err);
             window.location.href = '/';
           }
@@ -150,11 +174,13 @@
 
         onMounted(() => {
           loadWalks();
+          loadUserDogs();
         });
 
         return {
           form,
           walks,
+          userDogs,
           message,
           error,
           submitWalkRequest,
