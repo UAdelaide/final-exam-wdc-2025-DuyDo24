@@ -151,17 +151,6 @@
           window.sessionStorage.setItem('dogWalkingUser', JSON.stringify(sessionData));
         },
 
-        checkExistingSession() {
-          // Check if user is already logged in
-          const sessionData = window.sessionStorage.getItem('dogWalkingUser');
-          if (sessionData) {
-            const userData = JSON.parse(sessionData);
-            this.loggedInUser = userData;
-            this.isLoggedIn = true;
-          }
-        },
-
-        
       }
     }).mount('#app');
   </script>
