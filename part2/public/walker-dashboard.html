@@ -9,13 +9,19 @@
 </head>
 <body class="bg-light">
   <div id="app" class="container py-4">
-    <h1 class="mb-4 text-success">Walker Dashboard</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="text-success mb-0">Walker Dashboard</h1>
+      <button @click="logout" class="btn btn-outline-danger">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </button>
+    </div>
 
     <!-- Alert messages -->
     <div v-if="message" class="alert alert-info">{{ message }}</div>
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
     <!-- Walk requests list -->
+    <h2 class="mb-3">Available Walk Requests</h2>
     <div v-if="walks.length > 0" class="row">
       <div class="col-md-6 mb-4" v-for="walk in walks" :key="walk.request_id">
         <div class="card">
@@ -27,17 +33,12 @@
               <strong>Location:</strong> {{ walk.location }}<br>
               <strong>Owner:</strong> {{ walk.owner_name }}
             </p>
-            <button type=button class="btn btn-outline-success" @click="applyToWalk(walk.request_id)">Apply</button>
+            <button type="button" class="btn btn-outline-success" @click="applyToWalk(walk.request_id)">Apply</button>
           </div>
         </div>
       </div>
     </div>
-    <p v-else>No available walk requests at the moment.</p>
-
-     <!-- Added Logout Button -->
-     <div class="text-end mt-4">
-      <button @click="logout" class="btn btn-outline-danger">Logout</button>
-    </div>
+    <div v-else class="alert alert-info">No available walk requests at the moment.</div>
   </div>
 
   <script>
@@ -53,7 +54,14 @@
         async function loadWalkRequests() {
           try {
             const res = await fetch('/api/walks');
-            if (!res.ok) throw new Error('Failed to load walk requests');
+            if (!res.ok) {
+              if (res.status === 401) {
+                // Session expired, redirect to login
+                window.location.href = '/login';
+                return;
+              }
+              throw new Error('Failed to load walk requests');
+            }
             walks.value = await res.json();
           } catch (err) {
             error.value = err.message;
@@ -67,9 +75,17 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ walker_id: user })
             });
-            const result = await res.json();
 
-            if (!res.ok) throw new Error(result.error || 'Application failed');
+            if (!res.ok) {
+              if (res.status === 401) {
+                window.location.href = '/login';
+                return;
+              }
+              const result = await res.json();
+              throw new Error(result.error || 'Application failed');
+            }
+
+            const result = await res.json();
             message.value = result.message;
             error.value = '';
             await loadWalkRequests();
@@ -79,20 +95,21 @@
           }
         }
 
-        //Logout function
         async function logout() {
           try {
-            const res = await fetch('/api/logout', {
-              method: 'GET',
-              credentials: 'include' // Ensures cookies are sent and cleared
+            const res = await fetch('/api/users/logout', {
+              method: 'POST',
+              credentials: 'include'
             });
-            if (!res.ok) throw new Error('Logout failed');
-            console.log('Logout successful'); // Debugging
-            // Redirect handled by server response
+
+            // Always redirect to login regardless of response
+            // This ensures logout works even if there are server issues
+            window.location.href = '/login';
+
           } catch (err) {
-            error.value = 'Logout failed';
-            message.value = '';
-            console.error('Logout failed:', err);
+            // Even if logout request fails, redirect to login
+            console.error('Logout request failed:', err);
+            window.location.href = '/login';
           }
         }
 
