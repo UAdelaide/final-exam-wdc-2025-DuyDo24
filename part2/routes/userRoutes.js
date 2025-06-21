@@ -79,7 +79,7 @@ router.get('/dogs', requireAuth, async (req, res) => {
       ORDER BY name
     `;
 
-    const dogs = await db.query(query, [userId]);
+    const [dogs] = await db.query(query, [userId]);
 
     res.json(dogs);
   } catch (error) {
