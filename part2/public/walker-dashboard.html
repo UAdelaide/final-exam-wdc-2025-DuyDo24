@@ -94,6 +94,23 @@
             message.value = '';
           }
         }
+        async function getCurrentUser() {
+  try {
+    const response = await fetch('/api/users/me', {
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include' // Ensure session cookie is sent
+    });
+    const data = await response.json();
+    if (response.ok && data.user_id) {
+      return data.user_id; // Return the current user's ID
+    } else {
+      throw new Error('Unable to fetch current user');
+    }
+  } catch (error) {
+    console.error('Error fetching current user:', error);
+    return null; // Return null or handle error as needed
+  }
+}
 
         async function logout() {
           try {
