@@ -160,20 +160,18 @@
               // Failed login
               this.errorMessage = 'Invalid username or password. Please try again.';
             }
-
             this.isLoading = false;
           }, 1000);
         },
 
         authenticateUser(username, password) {
-          // In a real app, this would make an API call to verify credentials
           return this.users.find(user =>
             user.username === username && user.password === password
           );
         },
 
         storeSession(user) {
-          // Store user session (simplified - in real app would use secure tokens)
+          // Store user session
           const sessionData = {
             user_id: user.user_id,
             username: user.username,
