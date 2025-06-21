@@ -98,7 +98,7 @@
           try {
             const response = await fetch('/api/users/me', {
               headers: { 'Content-Type': 'application/json' },
-              credentials: 'include'
+              credentials: 'include' 
             });
             const data = await response.json();
             if (response.ok && data.user_id) {
