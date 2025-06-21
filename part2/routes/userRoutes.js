@@ -2,6 +2,14 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 const { requireAuth } = require('../middleware/auth');
+
+// Middleware to require authentication
+function requireAuth(req, res, next) {
+  if (!req.session || !req.session.user || !req.session.userId) {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+  next();
+}
 // GET all users (for admin/testing)
 router.get('/', async (req, res) => {
   try {
