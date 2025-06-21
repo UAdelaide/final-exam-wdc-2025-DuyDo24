@@ -1,12 +1,23 @@
 const express = require('express');
 const path = require('path');
 require('dotenv').config();
-
+const session = require('express-session');
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '/public')));
+
+// Session middleware
+app.use(session({
+    secret: 'your-secret-key-here',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // Set to true if using HTTPS
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
 
 // Routes
 const walkRoutes = require('./routes/walkRoutes');
