@@ -113,6 +113,7 @@
 
         async function loadUserDogs() {
           try {
+            // Changed from '/api/users/dogs' to '/api/users/my-dogs'
             const res = await fetch('/api/users/my-dogs', {
               credentials: 'include'
             });
@@ -123,9 +124,15 @@
               }
               throw new Error('Failed to load dogs');
             }
-            userDogs.value = await res.json();
+            const dogs = await res.json();
+            userDogs.value = dogs;
+
+            if (dogs.length === 0) {
+              error.value = 'You need to register at least one dog before creating walk requests.';
+            }
           } catch (err) {
             error.value = 'Failed to load your dogs';
+            console.error('Load dogs error:', err);
           }
         }
 
