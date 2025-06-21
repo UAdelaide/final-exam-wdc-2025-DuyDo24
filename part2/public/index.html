@@ -145,7 +145,7 @@
             this.dogs = combinedDogs;
           } catch (err) {
             console.error('Failed to load dogs and images:', err);
-            this.errorMessage = 'Could not load the list of dogs. Is the server running and is the /api/dogs route defined?';
+            this.errorMessage = 'Could not load the list of dogs';
           }
           this.isLoading = false;
         }
