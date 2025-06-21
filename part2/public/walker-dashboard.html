@@ -82,7 +82,7 @@
         //Logout function
         async function logout() {
           try {
-            const res = await fetch('/api/users/logout', {
+            const res = await fetch('/api/logout', {
               method: 'GET',
               credentials: 'include' // Ensures cookies are sent and cleared
             });
