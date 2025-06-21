@@ -2,16 +2,39 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 
-// GET all walk requests (for walkers to view)
-router.get('/', async (req, res) => {
+// GET walk requests - modified to show user's own requests when accessed from owner dashboard
+router.get('/', requireAuth, async (req, res) => {
   try {
-    const [rows] = await db.query(`
-      SELECT wr.*, d.name AS dog_name, d.size, u.username AS owner_name
-      FROM WalkRequests wr
-      JOIN Dogs d ON wr.dog_id = d.dog_id
-      JOIN Users u ON d.owner_id = u.user_id
-      WHERE wr.status = 'open'
-    `);
+    const userId = req.session.userId;
+    const userRole = req.session.user.role;
+
+    let query;
+    let params;
+
+    if (userRole === 'walker') {
+      // Walkers see all open requests
+      query = `
+        SELECT wr.*, d.name AS dog_name, d.size, u.username AS owner_name
+        FROM WalkRequests wr
+        JOIN Dogs d ON wr.dog_id = d.dog_id
+        JOIN Users u ON d.owner_id = u.user_id
+        WHERE wr.status = 'open'
+      `;
+      params = [];
+    } else {
+      // Owners see their own requests
+      query = `
+        SELECT wr.*, d.name AS dog_name, d.size, u.username AS owner_name
+        FROM WalkRequests wr
+        JOIN Dogs d ON wr.dog_id = d.dog_id
+        JOIN Users u ON d.owner_id = u.user_id
+        WHERE d.owner_id = ?
+        ORDER BY wr.requested_time DESC
+      `;
+      params = [userId];
+    }
+
+    const [rows] = await db.query(query, params);
     res.json(rows);
   } catch (error) {
     console.error('SQL Error:', error);
