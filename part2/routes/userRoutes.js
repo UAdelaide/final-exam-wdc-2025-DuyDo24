@@ -64,13 +64,12 @@ router.post('/login', async (req, res) => {
 
 // Logout endpoint
 router.post('/logout', (req, res) => {
-  // Clear the session cookie
-  res.clearCookie('sessionId'); //
-
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ error: 'Logout failed' });
     }
+    // Clear the session cookie 
+    res.clearCookie('connect.sid');
     res.json({ message: 'Logged out successfully' });
   });
 });
