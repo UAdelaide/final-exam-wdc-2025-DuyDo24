@@ -48,24 +48,20 @@
               </div>
             </form>
 
-            <!-- Dashboard Links for Logged-in Users -->
-            <div v-if="isLoggedIn" class="text-center">
+            <!-- Dashboard Links and Dog List -->
+            <div v-if="isLoggedIn"  class="text-center">
               <div class="alert alert-success mb-4">Welcome back, {{ loggedInUser.username }}! ({{ loggedInUser.role }})</div>
               <div class="d-grid gap-2 mb-4">
                 <a v-if="loggedInUser.role === 'owner'" href="owner-dashboard.html" class="btn btn-outline-primary btn-lg">Go to Owner Dashboard</a>
                 <a v-if="loggedInUser.role === 'walker'" href="walker-dashboard.html" class="btn btn-outline-success btn-lg">Go to Walker Dashboard</a>
               </div>
-            </div>
-
-            <!-- Dog List (Visible to All) -->
-            <div class="mt-4">
-              <h3>{{ isLoggedIn && loggedInUser.role === 'owner' ? 'Your Dogs' : 'Available Dogs' }}</h3>
-              <div v-if="dogs.length">
+              <div v-if="dogs.length" class="mt-4">
+                <h3>{{ loggedInUser.role === 'owner' ? 'Your Dogs' : 'Available Dogs' }}</h3>
                 <ul class="list-group">
                   <li v-for="dog in dogs" :key="dog.dog_id" class="list-group-item d-flex align-items-center">
                     <img v-if="dog.photoUrl" :src="dog.photoUrl" alt="Dog Photo" class="me-2" style="max-width:100px;">
                     <span v-else class="badge bg-secondary">No Photo</span>
-                    {{ dog.name }} ({{ dog.size }}){{ isLoggedIn && loggedInUser.role !== 'owner' ? ' - Owner ID: ' + dog.owner_id : '' }}
+                    {{ dog.name }} ({{ dog.size }}){{ loggedInUser.role !== 'owner' ? ' - Owner ID: ' + dog.owner_id : '' }}
                   </li>
                 </ul>
                 <h3 class="mt-4">Dog Table View</h3>
@@ -99,20 +95,8 @@
       },
       mounted() {
         this.checkExistingSession();
-        this.fetchDogs(); // Fetch dogs on page load
       },
       methods: {
-        async checkExistingSession() {
-          try {
-            const user = JSON.parse(window.sessionStorage.getItem('dogWalkingUser'));
-            if (user) {
-              this.isLoggedIn = true;
-              this.loggedInUser = user;
-            }
-          } catch (error) {
-            console.error('Error checking session:', error);
-          }
-        },
         async handleLogin() {
           this.isLoading = true;
           this.errorMessage = '';
@@ -162,7 +146,7 @@
             this.errorMessage = 'Could not load the list of dogs.';
           }
           this.isLoading = false;
-        }
+        },
       }
     }).mount('#app');
   </script>
