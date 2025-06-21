@@ -148,31 +148,6 @@
           }
           this.isLoading = false;
         },
-        async function loadDogsWithImages() {
-            isLoading.value = true;
-            try {
-                const dogsRes = await fetch('/api/dogs');
-                if (!dogsRes.ok) throw new Error('Could not fetch dog list.');
-                const initialDogs = await dogsRes.json();
-
-                const imagePromises = initialDogs.map(() =>
-                    fetch('https://dog.ceo/api/breeds/image/random').then(res => res.json())
-                );
-
-                const imageResults = await Promise.all(imagePromises);
-
-                const combinedDogs = initialDogs.map((dog, index) => ({
-                    ...dog,
-                    imageUrl: imageResults[index].message
-                }));
-
-                dogs.value = combinedDogs;
-            } catch (err) {
-                console.error('Failed to load dogs and images:', err);
-                errorMessage.value = 'Could not load the list of dogs.';
-            }
-            isLoading.value = false;
-        }
       }
     }).mount('#app');
   </script>
