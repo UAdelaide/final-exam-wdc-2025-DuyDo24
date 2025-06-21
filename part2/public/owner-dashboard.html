@@ -94,17 +94,7 @@
 
         async function loadWalks() {
           try {
-            const res = await fetch('/api/walks', {
-              credentials: 'include'
-            });
-            if (!res.ok) {
-              if (res.status === 401) {
-                // Session expired, redirect to login
-                window.location.href = '/login';
-                return;
-              }
-              throw new Error('Failed to load walks');
-            }
+            const res = await fetch('/api/walks');
             walks.value = await res.json();
           } catch (err) {
             error.value = 'Failed to load walk requests';
