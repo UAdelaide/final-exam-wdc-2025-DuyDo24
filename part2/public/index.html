@@ -125,30 +125,7 @@
           }
           this.isLoading = false;
         },
-        async checkExistingSession() {
-          const sessionData = window.sessionStorage.getItem('dogWalkingUser');
-          console.log('Session Data:', sessionData);
-          if (sessionData) {
-            try {
-              const response = await fetch('/api/users/me', {
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include'
-              });
-              const data = await response.json();
-              console.log('Session check response:', data);
-              if (response.ok && data.user_id) {
-                this.isLoggedIn = true;
-                this.loggedInUser = data;
-                await this.fetchDogs();
-              } else {
-                window.sessionStorage.removeItem('dogWalkingUser');
-              }
-            } catch (error) {
-              console.error('Session check error:', error);
-              window.sessionStorage.removeItem('dogWalkingUser');
-            }
-          }
-        },
+        
         async fetchDogs() {
           try {
             const endpoint = this.loggedInUser.role === 'owner' ? '/api/users/my-dogs' : '/api/dogs';
