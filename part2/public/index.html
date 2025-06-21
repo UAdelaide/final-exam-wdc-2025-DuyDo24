@@ -125,35 +125,31 @@
           this.isLoading = false;
         },
 
-        async fetchDogs() {
-  try {
-    const response = await fetch('/api/dogs', {
-      method: 'GET',
-      credentials: 'include'
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch dog data.');
-    }
+        async function loadDogsWithImages() {
+            isLoading.value = true;
+            try {
+                const dogsRes = await fetch('/api/dogs');
+                if (!dogsRes.ok) throw new Error('Could not fetch dog list.');
+                const initialDogs = await dogsRes.json();
 
-    const dogsFromDb = await response.json();
+                const imagePromises = initialDogs.map(() =>
+                    fetch('https://dog.ceo/api/breeds/image/random').then(res => res.json())
+                );
 
-    // Fetch the same number of random images as there are dogs
-    const imageResponse = await fetch(`https://dog.ceo/api/breeds/image/random/${dogsFromDb.length}`);
-    const imageData = await imageResponse.json();
+                const imageResults = await Promise.all(imagePromises);
 
-    // Merge images into dog objects
-    this.dogs = dogsFromDb.map((dog, index) => ({
-      ...dog,
-      photoUrl: imageData.message[index] || null
-    }));
-  } catch (error) {
-    console.error('Error fetching dogs:', error);
-    this.dogs = [];
-  } finally {
-    this.isLoading = false;
-  }
-}
+                const combinedDogs = initialDogs.map((dog, index) => ({
+                    ...dog,
+                    imageUrl: imageResults[index].message
+                }));
 
+                dogs.value = combinedDogs;
+            } catch (err) {
+                console.error('Failed to load dogs and images:', err);
+                errorMessage.value = 'Could not load the list of dogs.';
+            }
+            isLoading.value = false;
+        }
       }
     }).mount('#app');
   </script>
