@@ -65,7 +65,8 @@
               <strong>Date:</strong> {{ new Date(walk.requested_time).toLocaleString() }}<br>
               <strong>Duration:</strong> {{ walk.duration_minutes }} minutes<br>
               <strong>Location:</strong> {{ walk.location }}<br>
-              <strong>Status:</strong> {{ walk.status }}
+              <strong>Status:</strong>
+              <span :class="getStatusClass(walk.status)">{{ walk.status }}</span>
             </p>
           </div>
         </div>
@@ -93,7 +94,9 @@
 
         async function loadWalks() {
           try {
-            const res = await fetch('/api/walks');
+            const res = await fetch('/api/walks', {
+              credentials: 'include'
+            });
             if (!res.ok) {
               if (res.status === 401) {
                 // Session expired, redirect to login
@@ -110,7 +113,9 @@
 
         async function loadUserDogs() {
           try {
-            const res = await fetch('/api/users/dogs');
+            const res = await fetch('/api/users/dogs', {
+              credentials: 'include'
+            });
             if (!res.ok) {
               if (res.status === 401) {
                 window.location.href = '/login';
@@ -129,6 +134,7 @@
             const res = await fetch('/api/walks', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
               body: JSON.stringify(form.value)
             });
 
@@ -166,9 +172,18 @@
             window.location.href = '/';
 
           } catch (err) {
-
             console.error('Logout request failed:', err);
             window.location.href = '/';
+          }
+        }
+
+        function getStatusClass(status) {
+          switch(status) {
+            case 'open': return 'badge bg-primary';
+            case 'accepted': return 'badge bg-success';
+            case 'completed': return 'badge bg-secondary';
+            case 'cancelled': return 'badge bg-danger';
+            default: return 'badge bg-light text-dark';
           }
         }
 
@@ -184,7 +199,8 @@
           message,
           error,
           submitWalkRequest,
-          logout
+          logout,
+          getStatusClass
         };
       }
     }).mount('#app');
