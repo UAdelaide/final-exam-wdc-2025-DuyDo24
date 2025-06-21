@@ -50,28 +50,28 @@
 
             <!-- Dashboard Links and Dog List -->
             <div v-if="isLoggedIn" class="text-center">
-              <div class="alert alert-success mb-4">
-                Welcome back, {{ loggedInUser.username }}! ({{ loggedInUser.role }})
-              </div>
+              <div class="alert alert-success mb-4">Welcome back, {{ loggedInUser.username }}! ({{ loggedInUser.role }})</div>
               <div class="d-grid gap-2 mb-4">
-                <a v-if="loggedInUser.role === 'owner'" href="owner-dashboard.html" class="btn btn-outline-primary btn-lg">
-                  Go to Owner Dashboard
-                </a>
-                <a v-if="loggedInUser.role === 'walker'" href="walker-dashboard.html" class="btn btn-outline-success btn-lg">
-                  Go to Walker Dashboard
-                </a>
+                <a v-if="loggedInUser.role === 'owner'" href="owner-dashboard.html" class="btn btn-outline-primary btn-lg">Go to Owner Dashboard</a>
+                <a v-if="loggedInUser.role === 'walker'" href="walker-dashboard.html" class="btn btn-outline-success btn-lg">Go to Walker Dashboard</a>
               </div>
               <div v-if="dogs.length" class="mt-4">
                 <h3>{{ loggedInUser.role === 'owner' ? 'Your Dogs' : 'Available Dogs' }}</h3>
                 <ul class="list-group">
                   <li v-for="dog in dogs" :key="dog.dog_id" class="list-group-item">
-                    {{ dog.name }} ({{ dog.size }}) {{ loggedInUser.role === 'owner' ? '' : '- Owner ID: ' + dog.owner_id }}
+                    <img v-if="dog.photoUrl" :src="dog.photoUrl" alt="Dog Photo" style="max-width:100px;border-radius:8px;">
+                    <div v-else style="width:100px;height:100px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;color:#6c757d;border-radius:8px;">No Photo</div>
+                    {{ dog.name }} ({{ dog.size }}){{ loggedInUser.role !== 'owner' ? ' - Owner ID: ' + dog.owner_id : '' }}
                   </li>
                 </ul>
+                <h3 class="mt-4">Dog Table View</h3>
+                <table class="table table-striped">
+                  <thead class="table-dark"><tr><th>Photo</th><th>ID</th><th>Name</th><th>Size</th><th>Owner ID</th></tr></thead>
+                  <tbody><tr v-for="dog in dogs" :key="dog.dog_id"><td><img v-if="dog.photoUrl" :src="dog.photoUrl" alt="Dog Photo" style="max-width:120px;border-radius:8px;"><div v-else style="width:120px;height:120px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;color:#6c757d;border-radius:8px;">No Photo</div></td><td>{{ dog.dog_id }}</td><td>{{ dog.name }}</td><td>{{ dog.size }}</td><td>{{ dog.owner_id }}</td></tr></tbody>
+                </table>
               </div>
-              <div v-else class="alert alert-info">
-                No dogs available.
-              </div>
+              <div v-else class="alert alert-info">No dogs available.</div>
+              <p class="text-muted mt-3">Last updated: 02:59 PM ACST, Saturday, June 21, 2025</p>
             </div>
           </div>
         </div>
