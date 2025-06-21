@@ -176,16 +176,6 @@
           }
         }
 
-        function getStatusClass(status) {
-          switch(status) {
-            case 'open': return 'badge bg-primary';
-            case 'accepted': return 'badge bg-success';
-            case 'completed': return 'badge bg-secondary';
-            case 'cancelled': return 'badge bg-danger';
-            default: return 'badge bg-light text-dark';
-          }
-        }
-
         onMounted(() => {
           loadWalks();
           loadUserDogs();
