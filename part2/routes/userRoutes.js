@@ -86,7 +86,6 @@ router.get('/dogs', requireAuth, async (req, res) => {
       ORDER BY name
     `;
 
-    // mysql2/promise returns [rows, fields]
     const [dogs] = await db.query(query, [userId]);
 
     console.log('Found dogs:', dogs);
