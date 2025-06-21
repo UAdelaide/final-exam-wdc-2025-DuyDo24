@@ -72,20 +72,31 @@ router.post('/logout', (req, res) => {
 router.get('/dogs', requireAuth, async (req, res) => {
   try {
     const userId = req.session.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User ID not found in session' });
+    }
+
+    console.log('Fetching dogs for user ID:', userId);
+
     const query = `
       SELECT dog_id, name, size
-      FROM dogs
+      FROM Dogs
       WHERE owner_id = ?
       ORDER BY name
     `;
 
+    // mysql2/promise returns [rows, fields]
     const [dogs] = await db.query(query, [userId]);
+
+    console.log('Found dogs:', dogs);
 
     res.json(dogs);
   } catch (error) {
     console.error('Error fetching user dogs:', error);
-    res.status(500).json({ error: 'Failed to fetch dogs' });
+    res.status(500).json({ error: 'Failed to fetch dogs: ' + error.message });
   }
 });
+
 
 module.exports = router;
