@@ -55,17 +55,18 @@ router.post('/login', async (req, res) => {
   }
 });
 
-//Logout
-router.get('/logout', (req, res) => {
-  req.session.destroy(err => {
+// Logout endpoint
+app.post('/api/users/logout', (req, res) => {
+  // Clear the session cookie
+  res.clearCookie('sessionId'); // or whatever your cookie name is
+
+  // If using express-session:
+  req.session.destroy((err) => {
     if (err) {
-      console.error('Error destroying session:', err);
-      return res.status(500).send('Logout failed.');
+      return res.status(500).json({ error: 'Logout failed' });
     }
-    res.clearCookie('connect.sid'); // remove session cookie
-    res.redirect('/'); // redirect back to login page
+    res.json({ message: 'Logged out successfully' });
   });
 });
-
 
 module.exports = router;
