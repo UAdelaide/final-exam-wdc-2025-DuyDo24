@@ -119,14 +119,14 @@
             });
             if (!res.ok) {
               if (res.status === 401) {
-                window.location.href = '/login';
+                window.location.href = '/';
                 return;
               }
               throw new Error('Failed to load dogs');
             }
             const dogs = await res.json();
             userDogs.value = dogs;
-            
+
           } catch (err) {
             error.value = 'Failed to load your dogs';
             console.error('Load dogs error:', err);
