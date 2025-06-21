@@ -172,6 +172,19 @@
           }
         }
 
+        async function logout() {
+          try {
+            const res = await fetch('/api/users/logout', {
+              method: 'POST',
+              credentials: 'include'
+            });
+            window.location.href = '/';
+
+          } catch (err) {
+            console.error('Logout request failed:', err);
+            window.location.href = '/';
+          }
+        }
 
         function getStatusClass(status) {
           switch(status) {
