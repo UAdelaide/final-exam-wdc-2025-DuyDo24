@@ -71,6 +71,7 @@
                 </table>
               </div>
               <div v-else class="alert alert-info">No dogs available.</div>
+              <p class="text-muted mt-3">Last updated: 03:00 PM ACST, Saturday, June 21, 2025</p>
             </div>
           </div>
         </div>
@@ -123,7 +124,30 @@
           }
           this.isLoading = false;
         },
+        async fetchDogs() {
+          this.isLoading = true;
+          this.errorMessage = '';
+          try {
+            const dogsRes = await fetch('/api/dogs');
+            if (!dogsRes.ok) throw new Error('Could not fetch dog list.');
+            const initialDogs = await dogsRes.json();
 
+            const imagePromises = initialDogs.map(() =>
+              fetch('https://dog.ceo/api/breeds/image/random').then(res => res.json())
+            );
+
+            const imageResults = await Promise.all(imagePromises);
+
+            this.dogs = initialDogs.map((dog, index) => ({
+              ...dog,
+              photoUrl: imageResults[index].message
+            }));
+          } catch (err) {
+            console.error('Failed to load dogs and images:', err);
+            this.errorMessage = 'Could not load the list of dogs.';
+          }
+          this.isLoading = false;
+        },
         async function loadDogsWithImages() {
             isLoading.value = true;
             try {
