@@ -134,7 +134,6 @@
             const data = await response.json();
             console.log('Dogs response:', data);
             if (response.ok) {
-              // Fetch a random photo for each dog using Dogs CEO API
               const dogsWithPhotos = await Promise.all(data.map(async (dog) => {
                 const photoResponse = await fetch('https://dog.ceo/api/breeds/image/random');
                 const photoData = await photoResponse.json();
