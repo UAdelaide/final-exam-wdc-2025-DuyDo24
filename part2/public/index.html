@@ -180,8 +180,6 @@
             role: user.role,
             loginTime: new Date().toISOString()
           };
-          // Note: In a real application, you'd store this server-side or use secure tokens
-          // For demo purposes, we'll use a simple approach
           window.sessionStorage.setItem('dogWalkingUser', JSON.stringify(sessionData));
         },
 
