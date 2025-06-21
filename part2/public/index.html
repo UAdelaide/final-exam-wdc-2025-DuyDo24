@@ -48,8 +48,7 @@
               </div>
             </form>
 
-            <!-- Dog Table Section -->
-            <div v-if="isLoggedIn" class="mt-4">
+            <div class="col-lg-8">
               <h2 class="mb-4">Our Featured Dogs</h2>
               <div v-if="isLoading" class="text-center mt-5">
                 <div class="spinner-border text-primary" role="status">
@@ -57,7 +56,7 @@
                 </div>
                 <p class="mt-2">Fetching dog photos...</p>
               </div>
-              <div v-else-if="dogs.length" class="table-responsive">
+              <div v-else class="table-responsive">
                 <table class="table table-striped table-hover align-middle">
                   <thead>
                     <tr><th>Photo</th><th>Name</th><th>Size</th><th>Owner</th></tr>
@@ -72,7 +71,6 @@
                   </tbody>
                 </table>
               </div>
-              <div v-else class="alert alert-warning">No dogs available at the moment.</div>
             </div>
           </div>
         </div>
@@ -99,14 +97,6 @@
         this.checkExistingSession();
       },
       methods: {
-        async checkExistingSession() {
-          const user = window.sessionStorage.getItem('dogWalkingUser');
-          if (user) {
-            this.isLoggedIn = true;
-            this.loggedInUser = JSON.parse(user);
-            await this.fetchDogs();
-          }
-        },
         async handleLogin() {
           this.isLoading = true;
           this.errorMessage = '';
@@ -133,26 +123,27 @@
           }
           this.isLoading = false;
         },
-        async fetchDogs() {
-          this.isLoading = true;
-          this.errorMessage = '';
-          try {
-            const dogsResponse = await fetch('/api/dogs');
-            if (!dogsResponse.ok) throw new Error('Could not fetch dog list.');
-            const initialDogs = await dogsResponse.json();
-            const imagePromises = initialDogs.map(() =>
-              fetch('https://dog.ceo/api/breeds/image/random').then(res => res.json())
-            );
-            const imageResults = await Promise.all(imagePromises);
-            this.dogs = initialDogs.map((dog, index) => ({
-              ...dog,
-              imageUrl: imageResults[index].message
-            }));
-          } catch (err) {
-            console.error('Failed to load dogs and images:', err);
-            this.errorMessage = 'Could not load the list of dogs. Is the server running and is the /api/dogs route defined?';
-          }
-          this.isLoading = false;
+
+        async function fetchDogs() {
+            isLoading.value = true;
+            try {
+                const dogsResponse = await fetch('/api/dogs');
+                if (!dogsResponse.ok) throw new Error('Could not fetch dog list.');
+                const initialDogs = await dogsResponse.json();
+                const imagePromises = initialDogs.map(() =>
+                    fetch('https://dog.ceo/api/breeds/image/random').then(res => res.json())
+                );
+                const imageResults = await Promise.all(imagePromises);
+                const combinedDogs = initialDogs.map((dog, index) => ({
+                    ...dog,
+                    imageUrl: imageResults[index].message
+                }));
+                dogs.value = combinedDogs;
+            } catch (err) {
+                console.error('Failed to load dogs and images:', err);
+                errorMessage.value = 'Could not load the list of dogs. Is the server running and is the /api/dogs route defined?';
+            }
+            isLoading.value = false;
         }
       }
     }).mount('#app');
