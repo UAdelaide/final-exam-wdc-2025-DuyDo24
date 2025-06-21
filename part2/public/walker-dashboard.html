@@ -79,6 +79,20 @@
           }
         }
 
+        async function logout() {
+        try {
+          await fetch('/api/users/logout', {
+            method: 'GET',
+            credentials: 'include' // Ensures cookies are sent and cleared
+          });
+          // Redirect handled by server response
+        } catch (err) {
+          error.value = 'Logout failed';
+          message.value = '';
+          console.error('Logout failed:', err);
+        }
+      }
+
         onMounted(() => {
           loadWalkRequests();
         });
