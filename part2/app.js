@@ -18,6 +18,20 @@ app.use(session({
     }
   }));
 
+// route to return dogs as JSON
+app.get('/api/dogs', async (req, res) => {
+    try {
+      const [rows] = await db.execute(`
+        SELECT d.name AS dog_name, d.size, u.username AS owner_username
+        FROM Dogs d
+        JOIN Users u ON d.owner_id = u.user_id
+      `);
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch dogs' });
+    }
+  });
+
 // Routes
 const walkRoutes = require('./routes/walkRoutes');
 const userRoutes = require('./routes/userRoutes');
