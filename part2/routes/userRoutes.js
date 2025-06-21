@@ -1,7 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
-const { requireAuth } = require('../middleware/auth');
+
+// Authentication middleware
+function requireAuth(req, res, next) {
+  if (req.session && req.session.userId) {
+    return next();
+  } else {
+    return res.status(401).json({ error: 'Authentication required. Please log in.' });
+  }
+}
 
 // Middleware to require authentication
 function requireAuth(req, res, next) {
