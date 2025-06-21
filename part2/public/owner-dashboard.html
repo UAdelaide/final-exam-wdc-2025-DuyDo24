@@ -9,7 +9,12 @@
 </head>
 <body class="bg-light">
   <div id="app" class="container py-4">
-    <h1 class="mb-4 text-primary">Owner Dashboard</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="text-primary mb-0">Owner Dashboard</h1>
+      <button @click="logout" class="btn btn-outline-danger">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </button>
+    </div>
 
     <!-- Walk request form -->
     <div class="card mb-4">
@@ -62,11 +67,6 @@
       </div>
     </div>
     <p v-else>No walk requests yet.</p>
-
-    <!-- Added Logout Button -->
-    <div class="text-end mt-4">
-      <button @click="logout" class="btn btn-outline-danger">Logout</button>
-    </div>
   </div>
 
   <script>
@@ -88,6 +88,14 @@
         async function loadWalks() {
           try {
             const res = await fetch('/api/walks');
+            if (!res.ok) {
+              if (res.status === 401) {
+                // Session expired, redirect to login
+                window.location.href = '/login';
+                return;
+              }
+              throw new Error('Failed to load walks');
+            }
             walks.value = await res.json();
           } catch (err) {
             error.value = 'Failed to load walk requests';
@@ -101,10 +109,17 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(form.value)
             });
+
+            if (!res.ok) {
+              if (res.status === 401) {
+                window.location.href = '/login';
+                return;
+              }
+              const result = await res.json();
+              throw new Error(result.error || 'Error submitting walk request');
+            }
+
             const result = await res.json();
-
-            if (!res.ok) throw new Error(result.error || 'Error submitting walk request');
-
             message.value = result.message;
             error.value = '';
             form.value = {
@@ -119,20 +134,24 @@
             message.value = '';
           }
         }
-        //Logout function
+
         async function logout() {
-        try {
-          await fetch('/api/users/logout', {
-            method: 'GET',
-            credentials: 'include' // Ensures cookies are sent and cleared
-          });
-          // Redirect handled by server response
-        } catch (err) {
-          error.value = 'Logout failed';
-          message.value = '';
-          console.error('Logout failed:', err);
+          try {
+            const res = await fetch('/api/users/logout', {
+              method: 'POST',
+              credentials: 'include'
+            });
+
+            // Always redirect to login regardless of response
+            // This ensures logout works even if there are server issues
+            window.location.href = '/login';
+
+          } catch (err) {
+            // Even if logout request fails, redirect to login
+            console.error('Logout request failed:', err);
+            window.location.href = '/login';
+          }
         }
-      }
 
         onMounted(() => {
           loadWalks();
