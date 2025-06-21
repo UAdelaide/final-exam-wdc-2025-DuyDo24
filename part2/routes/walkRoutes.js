@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
+const { requireAuth } = require('../middleware/auth');
 
 // GET walk requests - modified to show user's own requests when accessed from owner dashboard
 router.get('/', requireAuth, async (req, res) => {
