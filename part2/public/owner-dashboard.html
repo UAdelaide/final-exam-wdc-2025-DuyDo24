@@ -162,6 +162,16 @@
           }
         }
 
+        async function loadMyDogs() {
+          try {
+            const res = await fetch('/api/owner/dogs');
+            if (!res.ok) throw new Error('Failed to load your dogs');
+            myDogs.value = await res.json();
+          } catch (err) {
+            error.value = err.message;
+          }
+        }
+
         async function logout() {
           try {
             const res = await fetch('/api/users/logout', {
