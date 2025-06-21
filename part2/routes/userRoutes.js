@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Logout endpoint
-router.post('logout', (req, res) => {
+router.post('/logout', (req, res) => {
   // Clear the session cookie
   res.clearCookie('sessionId'); //
 
