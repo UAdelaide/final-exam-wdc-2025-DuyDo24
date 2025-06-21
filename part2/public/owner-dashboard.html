@@ -113,7 +113,7 @@
 
         async function loadUserDogs() {
           try {
-            const res = await fetch('/api/users/dogs', {
+            const res = await fetch('/api/users/my-dogs', {
               credentials: 'include'
             });
             if (!res.ok) {
