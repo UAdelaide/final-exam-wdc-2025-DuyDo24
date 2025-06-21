@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 
+// Authentication middleware
+function requireAuth(req, res, next) {
+  if (req.session && req.session.userId) {
+    return next();
+  } else {
+    return res.status(401).json({ error: 'Authentication required. Please log in.' });
+  }
+}
+
 // GET walk requests - modified to show user's own requests when accessed from owner dashboard
 router.get('/', requireAuth, async (req, res) => {
   try {
