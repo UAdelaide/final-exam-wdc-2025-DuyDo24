@@ -120,19 +120,26 @@
           }
         }
         //Logout function
-        async function logout() {
-        try {
-          await fetch('/api/users/logout', {
-            method: 'GET',
-            credentials: 'include' // Ensures cookies are sent and cleared
-          });
-          // Redirect handled by server response
-        } catch (err) {
-          error.value = 'Logout failed';
-          message.value = '';
-          console.error('Logout failed:', err);
-        }
-      }
+        logout() {
+  // Clear frontend session
+  window.sessionStorage.removeItem('dogWalkingUser');
+  this.isLoggedIn = false;
+  this.loggedInUser = null;
+  this.username = '';
+  this.password = '';
+  this.errorMessage = '';
+
+  // ✅ Log out from server too
+  fetch('/logout')
+    .then(() => {
+      // Redirect to homepage/login screen after server logout
+      window.location.href = '/';
+    })
+    .catch(err => {
+      console.error('Logout failed', err);
+    });
+}
+
 
         onMounted(() => {
           loadWalks();
