@@ -124,26 +124,30 @@
           this.isLoading = false;
         },
 
-        async function fetchDogs() {
-            isLoading.value = true;
-            try {
-                const dogsResponse = await fetch('/api/dogs');
-                if (!dogsResponse.ok) throw new Error('Could not fetch dog list.');
-                const initialDogs = await dogsResponse.json();
-                const imagePromises = initialDogs.map(() =>
-                    fetch('https://dog.ceo/api/breeds/image/random').then(res => res.json())
-                );
-                const imageResults = await Promise.all(imagePromises);
-                const combinedDogs = initialDogs.map((dog, index) => ({
-                    ...dog,
-                    imageUrl: imageResults[index].message
-                }));
-                dogs.value = combinedDogs;
-            } catch (err) {
-                console.error('Failed to load dogs and images:', err);
-                errorMessage.value = 'Could not load the list of dogs. Is the server running and is the /api/dogs route defined?';
-            }
-            isLoading.value = false;
+        async fetchDogs() {
+          this.isLoading = true;
+          try {
+            const dogsResponse = await fetch('/api/dogs', {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include'
+            });
+            if (!dogsResponse.ok) throw new Error('Could not fetch dog list.');
+            const initialDogs = await dogsResponse.json();
+            const imagePromises = initialDogs.map(() =>
+              fetch('https://dog.ceo/api/breeds/image/random').then(res => res.json())
+            );
+            const imageResults = await Promise.all(imagePromises);
+            const combinedDogs = initialDogs.map((dog, index) => ({
+              ...dog,
+              photoUrl: imageResults[index].message
+            }));
+            this.dogs = combinedDogs;
+          } catch (err) {
+            console.error('Failed to load dogs and images:', err);
+            this.errorMessage = 'Could not load the list of dogs. Is the server running and is the /api/dogs route defined?';
+          }
+          this.isLoading = false;
         }
       }
     }).mount('#app');
