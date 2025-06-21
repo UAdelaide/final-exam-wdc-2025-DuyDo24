@@ -71,7 +71,7 @@ router.post('/logout', (req, res) => {
   });
 });
 
-// GET dogs owned by the logged-in user
+// Add this route to your existing userRoutes.js
 router.get('/my-dogs', async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Not logged in' });
@@ -80,7 +80,7 @@ router.get('/my-dogs', async (req, res) => {
   try {
     const [rows] = await db.query(`
       SELECT dog_id, name, size
-      FROM Dogs
+      FROM Dogs 
       WHERE owner_id = ?
       ORDER BY name
     `, [req.session.user.user_id]);
