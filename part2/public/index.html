@@ -126,33 +126,34 @@
         },
 
         async fetchDogs() {
-          try {
-            const response = await fetch('/api/dogs', {
-              method: 'GET',
-              credentials: 'include'
-            });
-            if (!response.ok) {
-              throw new Error('Failed to fetch dog data.');
-            }
+  try {
+    const response = await fetch('/api/dogs', {
+      method: 'GET',
+      credentials: 'include'
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch dog data.');
+    }
 
-            const dogsFromDb = await response.json();
+    const dogsFromDb = await response.json();
 
-            // Fetch same number of random dog images
-            const imageResponse = await fetch(`https://dog.ceo/api/breeds/image/random/5`);
-            const imageData = await imageResponse.json();
+    // Fetch the same number of random images as there are dogs
+    const imageResponse = await fetch(`https://dog.ceo/api/breeds/image/random/${dogsFromDb.length}`);
+    const imageData = await imageResponse.json();
 
-            // Merge each image into the dog object
-            this.dogs = dogsFromDb.map((dog, index) => ({
-              ...dog,
-              photoUrl: imageData.message[index] || null
-            }));
-          } catch (error) {
-            console.error('Error fetching dogs:', error);
-            this.dogs = [];
-          } finally {
-            this.isLoading = false;
-          }
-        }
+    // Merge images into dog objects
+    this.dogs = dogsFromDb.map((dog, index) => ({
+      ...dog,
+      photoUrl: imageData.message[index] || null
+    }));
+  } catch (error) {
+    console.error('Error fetching dogs:', error);
+    this.dogs = [];
+  } finally {
+    this.isLoading = false;
+  }
+}
+
       }
     }).mount('#app');
   </script>
