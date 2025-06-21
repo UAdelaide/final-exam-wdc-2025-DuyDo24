@@ -48,8 +48,6 @@ router.post('/login', async (req, res) => {
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    req.session.userId = rows[0].user_id;
-    req.session.user = rows[0];
 
     res.json({ message: 'Login successful', user: rows[0] });
   } catch (error) {
@@ -57,48 +55,5 @@ router.post('/login', async (req, res) => {
   }
 });
 
-
-
-// Get dogs owned by the logged-in user
-router.get('/dogs', requireAuth, async (req, res) => {
-  try {
-    const userId = req.session.userId;
-
-    if (!userId) {
-      return res.status(401).json({ error: 'User ID not found in session' });
-    }
-
-    console.log('Fetching dogs for user ID:', userId);
-
-    const query = `
-      SELECT dog_id, name, size
-      FROM Dogs
-      WHERE owner_id = ?
-      ORDER BY name
-    `;
-
-    const [dogs] = await db.query(query, [userId]);
-
-    console.log('Found dogs:', dogs);
-
-    res.json(dogs);
-  } catch (error) {
-    console.error('Error fetching user dogs:', error);
-    res.status(500).json({ error: 'Failed to fetch dogs: ' + error.message });
-  }
-});
-
-
 module.exports = router;
 
-// Logout endpoint
-router.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Logout failed' });
-    }
-    // Clear the session cookie
-    res.clearCookie('connect.sid');
-    res.json({ message: 'Logged out successfully' });
-  });
-});
