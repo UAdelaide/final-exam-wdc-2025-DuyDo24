@@ -143,8 +143,6 @@
               // Successful login
               this.isLoggedIn = true;
               this.loggedInUser = user;
-
-              // Store session (in a real app, this would be handled server-side)
               this.storeSession(user);
 
               // Auto-redirect after 2 seconds
