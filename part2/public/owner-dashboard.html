@@ -118,10 +118,6 @@
               credentials: 'include'
             });
             if (!res.ok) {
-              if (res.status === 401) {
-                window.location.href = '/';
-                return;
-              }
               throw new Error('Failed to load dogs');
             }
             const dogs = await res.json();
